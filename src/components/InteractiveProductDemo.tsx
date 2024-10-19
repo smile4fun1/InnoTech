@@ -74,6 +74,7 @@ const InteractiveProductDemo = () => {
                   src={products[currentProduct].image} 
                   alt={products[currentProduct].title} 
                   className="rounded-lg shadow-lg"
+                  loading="lazy"
                 />
               </div>
             </motion.div>
