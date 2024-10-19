@@ -1,8 +1,18 @@
-import { useState, useRef, useEffect } from 'react'
-import { motion, AnimatePresence, useAnimation } from 'framer-motion'
-import { FaTimes } from 'react-icons/fa'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Modal from './Modal'
 
-const projects = [
+interface Project {
+  id: number
+  title: string
+  category: string
+  image: string
+  description: string
+  link: string
+  technologies: string[]
+}
+
+const projects: Project[] = [
   { 
     id: 1, 
     title: 'E-commerce Platform', 
@@ -59,136 +69,96 @@ const projects = [
   },
 ]
 
-const categories = ['All', ...new Set(projects.map(project => project.category))]
+const categories = ['All', ...Array.from(new Set(projects.map(project => project.category)))]
 
 const InteractivePortfolio = () => {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [activeCategory, setActiveCategory] = useState('All')
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const modalRef = useRef<HTMLDivElement>(null)
-  const controls = useAnimation()
+  const [imagesLoaded, setImagesLoaded] = useState(false)
+
+  useEffect(() => {
+    const loadImage = (image: string) => {
+      return new Promise((resolve, reject) => {
+        const loadImg = new Image()
+        loadImg.src = image
+        loadImg.onload = () => resolve(image)
+        loadImg.onerror = err => reject(err)
+      })
+    }
+
+    Promise.all(projects.map(project => loadImage(project.image)))
+      .then(() => setImagesLoaded(true))
+      .catch(err => console.log("Failed to load images", err))
+  }, [])
+
+  const openModal = (project: Project) => {
+    setSelectedProject(project)
+  }
+
+  const closeModal = () => {
+    setSelectedProject(null)
+  }
 
   const filteredProjects = activeCategory === 'All' 
     ? projects 
     : projects.filter(project => project.category === activeCategory)
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        setIsModalOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
-  useEffect(() => {
-    controls.start(i => ({
-      opacity: 1,
-      y: 0,
-      transition: { delay: i * 0.1 }
-    }))
-  }, [filteredProjects, controls])
-
-  const openModal = (project: typeof projects[0]) => {
-    setSelectedProject(project)
-    setIsModalOpen(true)
-  }
-
   return (
-    <section id="portfolio" className="py-20 bg-background">
+    <section id="portfolio" className="py-20 bg-gray-100 select-none">
       <div className="container mx-auto px-4">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-heading font-bold text-center mb-12 text-primary"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          Our Portfolio
-        </motion.h2>
-        <div className="flex flex-wrap justify-center mb-8">
-          {categories.map((category, index) => (
-            <motion.button
-              key={index}
-              className={`m-2 px-4 py-2 text-sm md:text-base rounded-full font-semibold transition-smooth ${
-                activeCategory === category 
-                  ? 'bg-secondary text-white' 
-                  : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+        <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12">Our Portfolio</h2>
+        
+        <div className="hidden md:flex flex-wrap justify-center mb-8">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`px-4 py-2 m-2 rounded-full ${
+                activeCategory === category ? 'bg-primary text-white' : 'bg-white text-primary'
               }`}
               onClick={() => setActiveCategory(category)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
               {category}
-            </motion.button>
+            </button>
           ))}
         </div>
+
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          layout
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: imagesLoaded ? 1 : 0 }}
+          transition={{ duration: 0.3 }}
         >
-          <AnimatePresence>
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                className="relative overflow-hidden rounded-lg shadow-lg cursor-pointer"
-                layout
-                initial={{ opacity: 0, y: 50 }}
-                animate={controls}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.5 }}
-                custom={index}
-                onClick={() => openModal(project)}
-              >
-                <img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-64 object-cover transition-transform duration-300 transform hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-4">
-                  <h3 className="text-2xl font-serif font-semibold mb-2">{project.title}</h3>
-                  <p className="text-sm mb-4 text-center">{project.category}</p>
-                  <motion.button
-                    className="bg-secondary text-white px-4 py-2 rounded-full"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    View Details
-                  </motion.button>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+          {filteredProjects.map((project) => (
+            <motion.div
+              key={project.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => openModal(project)}
+              layout
+              role="button"
+              aria-label={`View details of ${project.title}`}
+            >
+              <img 
+                src={project.image} 
+                alt={project.title} 
+                className="w-full h-48 object-cover" 
+                loading="lazy"
+              />
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+                <p className="text-gray-600 line-clamp-3">{project.description}</p>
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
 
-      {/* Modal */}
       <AnimatePresence>
-        {isModalOpen && selectedProject && (
-          <motion.div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              ref={modalRef}
-              className="bg-white rounded-lg max-w-3xl w-full overflow-hidden"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-3xl font-heading font-bold text-primary">{selectedProject.title}</h3>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <FaTimes className="h-6 w-6" />
-                  </button>
-                </div>
+        {selectedProject && (
+          <Modal isOpen={true} onClose={closeModal} title={selectedProject.title}>
+            {selectedProject && (
+              <>
                 <img 
                   src={selectedProject.image} 
                   alt={selectedProject.title} 
@@ -210,9 +180,9 @@ const InteractivePortfolio = () => {
                 >
                   Visit Project
                 </a>
-              </div>
-            </motion.div>
-          </motion.div>
+              </>
+            )}
+          </Modal>
         )}
       </AnimatePresence>
     </section>

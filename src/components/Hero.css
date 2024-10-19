@@ -1,0 +1,13 @@
+.aurora-effect {
+  background: linear-gradient(120deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
+  animation: aurora 10s infinite alternate;
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}

@@ -1,48 +1,37 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaRocket, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 import { useSwipeable } from 'react-swipeable'
 
-const products = [
+interface Product {
+  id: number
+  title: string
+  description: string
+  image: string
+}
+
+const products: Product[] = [
   {
-    name: 'AI-Powered Analytics',
-    description: 'Harness the power of artificial intelligence to gain deep insights from your data.',
-    icon: FaRocket,
-    features: [
-      'Real-time data processing',
-      'Predictive analytics',
-      'Custom dashboards',
-      'Anomaly detection'
-    ],
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+    id: 1,
+    title: "AI-Powered Analytics Dashboard",
+    description: "Real-time data visualization with predictive insights for informed decision-making.",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
   },
   {
-    name: 'Secure Cloud Infrastructure',
-    description: 'Scalable and secure cloud solutions to power your business applications.',
-    icon: FaRocket,
-    features: [
-      'Multi-region deployment',
-      'Auto-scaling',
-      'Disaster recovery',
-      '24/7 monitoring'
-    ],
-    image: 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+    id: 2,
+    title: "Smart IoT Management System",
+    description: "Centralized control for all your IoT devices with advanced automation capabilities.",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
   },
   {
-    name: 'IoT Platform',
-    description: 'Connect and manage your IoT devices with our comprehensive platform.',
-    icon: FaRocket,
-    features: [
-      'Device management',
-      'Data visualization',
-      'Edge computing support',
-      'API integration'
-    ],
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'
+    id: 3,
+    title: "Secure Cloud Storage Solution",
+    description: "Enterprise-grade cloud storage with end-to-end encryption and seamless integration.",
+    image: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
   }
 ]
 
-const InteractiveProductDemo: React.FC = () => {
+const InteractiveProductDemo = () => {
   const [currentProduct, setCurrentProduct] = useState(0)
 
   const nextProduct = () => {
@@ -59,58 +48,33 @@ const InteractiveProductDemo: React.FC = () => {
     trackMouse: true
   })
 
-  const product = products[currentProduct]
-
   return (
-    <section id="products" className="py-20 bg-gradient-to-b from-primary to-secondary text-white">
+    <section id="product-demo" className="py-20 bg-gray-800 text-white">
       <div className="container mx-auto px-4">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-serif font-bold text-center mb-12"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          Our Products
-        </motion.h2>
-        <div className="relative" {...handlers}>
+        <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12">Our Products</h2>
+        <div className="relative max-w-4xl mx-auto" {...handlers}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentProduct}
-              className="flex flex-col items-center"
-              initial={{ opacity: 0, x: 100 }}
+              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -100 }}
+              exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.5 }}
+              className="flex flex-col md:flex-row items-center"
             >
-              <div className="w-full max-w-md mb-8">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-full h-64 object-cover rounded-lg shadow-xl"
-                />
-              </div>
-              <div className="text-center">
-                <h3 className="text-3xl font-serif font-bold mb-4 flex items-center justify-center">
-                  <product.icon className="mr-4 text-accent" />
-                  {product.name}
-                </h3>
-                <p className="text-xl mb-6">{product.description}</p>
-                <ul className="mb-8 text-left">
-                  {product.features.map((feature, index) => (
-                    <li key={index} className="flex items-center mb-2">
-                      <FaRocket className="text-accent mr-2" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <motion.button
-                  className="bg-accent text-primary px-8 py-3 rounded-full text-lg font-bold hover:bg-opacity-90 transition-smooth"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
+              <div className="w-full md:w-1/2 mb-8 md:mb-0 md:pr-8">
+                <h3 className="text-2xl font-semibold mb-4">{products[currentProduct].title}</h3>
+                <p className="text-gray-300 mb-6">{products[currentProduct].description}</p>
+                <button className="bg-accent text-primary px-6 py-2 rounded-full font-semibold hover:bg-opacity-90 transition-colors">
                   Learn More
-                </motion.button>
+                </button>
+              </div>
+              <div className="w-full md:w-1/2">
+                <img 
+                  src={products[currentProduct].image} 
+                  alt={products[currentProduct].title} 
+                  className="rounded-lg shadow-lg"
+                />
               </div>
             </motion.div>
           </AnimatePresence>

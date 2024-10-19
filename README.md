@@ -59,3 +59,8 @@ Before you begin, ensure you have the following installed:
 ## Building for Production
 
 To create a production build, run:
+```
+npm run build
+```
+
+

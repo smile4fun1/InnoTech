@@ -30,63 +30,53 @@ const steps = [
 ]
 
 const ProcessTimeline = () => {
-  const [activeStep, setActiveStep] = useState<number | null>(null)
+  const [expandedStep, setExpandedStep] = useState<number | null>(null)
 
   const toggleStep = (index: number) => {
-    setActiveStep(activeStep === index ? null : index)
+    setExpandedStep(expandedStep === index ? null : index)
   }
 
   return (
-    <section id="process" className="py-20 bg-white">
+    <section id="process" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        <motion.h2 
-          className="text-4xl md:text-5xl font-heading font-bold text-center mb-12 text-primary"
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          Our Process
-        </motion.h2>
-        <div className="space-y-8">
+        <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12">Our Process</h2>
+        <div className="max-w-4xl mx-auto">
           {steps.map((step, index) => (
             <motion.div
               key={index}
-              className="bg-background rounded-lg overflow-hidden"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              className="mb-8 last:mb-0"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2 }}
             >
-              <motion.div 
-                className="p-6 cursor-pointer shadow-lg"
+              <div 
+                className="flex items-center cursor-pointer"
                 onClick={() => toggleStep(index)}
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <step.icon className="text-3xl text-secondary mr-4" />
-                    <h3 className="text-xl font-heading font-semibold text-primary">{step.title}</h3>
-                  </div>
-                  <motion.div
-                    animate={{ rotate: activeStep === index ? 180 : 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <FaChevronDown className="text-primary" />
-                  </motion.div>
+                <div className="bg-primary text-white rounded-full p-3 mr-4">
+                  <step.icon className="text-2xl" />
                 </div>
-                <p className="mt-2 text-gray-600">{step.description}</p>
-              </motion.div>
-              <AnimatePresence initial={false}>
-                {activeStep === index && (
+                <div className="flex-grow">
+                  <h3 className="text-xl font-semibold">{step.title}</h3>
+                  <p className="text-gray-600">{step.description}</p>
+                </div>
+                <motion.div
+                  animate={{ rotate: expandedStep === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <FaChevronDown className="text-primary" />
+                </motion.div>
+              </div>
+              <AnimatePresence>
+                {expandedStep === index && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-4 ml-16 text-gray-600"
                   >
-                    <div className="px-6 pb-6">
-                      <p className="text-gray-700">{step.details}</p>
-                    </div>
+                    {step.details}
                   </motion.div>
                 )}
               </AnimatePresence>
