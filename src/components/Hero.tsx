@@ -19,6 +19,8 @@ const Hero = () => {
   return (
     <div id="home" className="relative h-screen flex items-center justify-center bg-hero-pattern bg-cover bg-center bg-fixed">
       <div className="absolute inset-0 aurora-effect"></div>
+      {/* Mobile background image */}
+      <div className="absolute inset-0 bg-cover bg-center md:hidden" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')" }}></div>
       <div className="container mx-auto px-4 z-10">
         <div className="text-center">
           <motion.h1

@@ -1,6 +1,7 @@
 .aurora-effect {
   background: linear-gradient(120deg, rgba(0, 255, 255, 0.2), rgba(255, 0, 255, 0.2));
   animation: aurora 10s infinite alternate;
+  mix-blend-mode: overlay;
 }
 
 @keyframes aurora {
@@ -10,4 +11,8 @@
   100% {
     background-position: 100% 50%;
   }
+}
+
+.text-shadow {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
